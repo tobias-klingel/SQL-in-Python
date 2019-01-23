@@ -15,6 +15,9 @@ class MySQLDBUse():
         self._db_connection = pymysql.connect(user=self.user,port=self.port, passwd=self.password, db=dbname)
         self._db_cursor = self._db_connection.cursor()
 
+##########################################################################################################################################################
+# General
+#################
     #Send a sql query to the database
     def query(self, sqlQuery):
        try:
@@ -27,3 +30,33 @@ class MySQLDBUse():
     #Get all rows of a database
     def fetchall(self):
         return self._db_cursor.fetchall()
+
+##########################################################################################################################################################
+# Creating Tabels
+#################
+
+    # Create table with id, column1(Char), column2(INT), time stamp
+    def createNew_2column_Table(self, tabelName):
+        db = MyDB("DATABASENAME") #<------Please change
+        createNewHastagTabel = "CREATE TABLE " + tabelName + " ( \
+       id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, \
+       column1 CHAR(50) NOT NULL, \
+       column2 INT (50) NOT NULL, \
+       reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP \
+       )"
+        try:
+            print self._db_cursor.execute(createNewHastagTabel)
+        except (pymysql.DatabaseError) as error:
+            print(error)
+            print "Error in creating: " + tabelName
+        return error
+
+##########################################################################################################################################################
+#Write in Tables
+################
+    #Write 2 cloum in created table
+    def insertNew_2Colum_InDB(self, tableName, column1, column2):
+         sqlQuery = "insert into " + tableName +  " VALUES(null, '%s', '%i', NOW())"% \
+              (column1, column2)
+         self.query(sqlQuery)
+         self._db_connection.commit()

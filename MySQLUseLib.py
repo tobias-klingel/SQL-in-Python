@@ -30,11 +30,15 @@ class MySQLDBUse():
     #Get all rows of a database
     def fetchall(self):
         return self._db_cursor.fetchall()
+    
+    #Return number of tabels in database
+    def numberOfTabels(self,dbname):
+        tabels = self.getAllTables(dbname)
+        return len(tabels)    
 
 ##########################################################################################################################################################
 # Creating Tabels
 #################
-
     # Create table with id, column1(Char), column2(INT), time stamp
     def createNew_2column_Table(self, tabelName):
         db = MyDB("DATABASENAME") #<------Please change
@@ -60,3 +64,45 @@ class MySQLDBUse():
               (column1, column2)
          self.query(sqlQuery)
          self._db_connection.commit()
+         
+##########################################################################################################################################################
+# Read Tabels
+##################
+    #Get all tabel of a database
+    def getAllTables(self,dbNameSearch):
+        self.__init__(dbNameSearch)
+        numberOfTables= db.query("SHOW TABLES")
+        return db.fetchall() 
+          
+        
+##########################################################################################################################################################
+# Delete func.
+#################
+    # Delete empty Tabels
+    def deleteEmptyTabels(self,dbname):
+        tabels = db.getAllTables(dbname)
+        for tablename in tabels:
+            sqlq = "SELECT * FROM " + tablename[0] + " LIMIT 1;"
+            if not db.query(sqlq):
+                sqlqDelete = "DROP TABLE " + tablename[0]
+                print db.query(sqlqDelete)
+                print "Delete " + tablename[0]
+                
+    # Delete all tabels with wrong colum name
+    def deleteTabelsWithWrongColum(self,dbname, columnName):
+        tabels = db.getAllTables(dbname)
+        for tablename in tabels:
+            # sqlq = "SELECT hashtag FROM " + tablename[0] + ";"
+            sqlq = "SELECT *    FROM    INFORMATION_SCHEMA.COLUMNS    WHERE    TABLE_NAME = '" + tablename[0] + "'    AND    COLUMN_NAME = '" + columnName + "'"
+            result = db.query(sqlq)
+            if result == 0:
+                sqlqDelete = "DROP TABLE " + tablename[0]
+                print db.query(sqlqDelete)
+                print "Delete " + tablename[0]
+                print "--------------------"                    
+
+##########################################################################################################################################################
+# Special requests
+################# 
+
+     
